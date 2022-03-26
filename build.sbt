@@ -1,8 +1,16 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+val version = "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.8"
-libraryDependencies += "dev.zio" %% "zio" % "1.0.9"
+val scalaVer = "3.1.1"
+
+val zioVersion = "1.0.13"
+
+lazy val compileDependencies = Seq(
+  "dev.zio" %% "zio" % zioVersion
+) map (_ % Compile)
+
 lazy val root = (project in file("."))
   .settings(
-    name := "zio-play"
+    name := "zio-play",
+    scalaVersion := scalaVer,
+    libraryDependencies ++= compileDependencies
   )
