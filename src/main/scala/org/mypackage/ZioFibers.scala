@@ -30,13 +30,29 @@ object ZioFibers extends zio.App {
   def printThread = s"[${Thread.currentThread().getName}]"
 
   def synchronousRoutine() = for {
+    _ <- ZIO.succeed(println("Synchronous"))
     _ <- showerTime.debug(printThread)
     _ <- boilingWater.debug(printThread)
     _ <- prepareCoffee.debug(printThread)
   } yield ()
 
-  override def run(args: List[String]) = {
+  // fiber concept - schedulable computation
+  // very lightweight ds spawned or created
+  // upto zio to schedule it to result in parallelism
+  // notion of virtual thread
+  // Fiber[E,A]
+
+  def concurrentShowerWhileBoilingWater() = for {
+    _ <- ZIO.succeed(println("in Concurrent"))
+    _ <- showerTime.debug(printThread).fork
+    _ <- boilingWater.debug(printThread)
+    _ <- prepareCoffee.debug(printThread)
+  } yield()
+
+
+
+  override def run(args: List[String]) =
     synchronousRoutine().exitCode
-  }
+    concurrentShowerWhileBoilingWater().exitCode
 
 }
