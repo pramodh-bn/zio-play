@@ -49,10 +49,17 @@ object ZioFibers extends zio.App {
     _ <- prepareCoffee.debug(printThread)
   } yield()
 
+  def concurrentRoutine() = for {
+    _ <- showerTime.debug(printThread).fork
+    _ <- boilingWater.debug(printThread).fork
+    _ <- prepareCoffee.debug(printThread)
+  } yield()
+
 
 
   override def run(args: List[String]) =
     synchronousRoutine().exitCode
     concurrentShowerWhileBoilingWater().exitCode
+    concurrentRoutine().exitCode
 
 }
