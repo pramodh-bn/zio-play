@@ -1,5 +1,6 @@
 package org.mypackage
 
+import zio.ZIO.debug
 import zio.{ExitCode, UIO, URIO, ZIO}
 
 object ZioFibers extends zio.App {
@@ -50,9 +51,12 @@ object ZioFibers extends zio.App {
   } yield()
 
   def concurrentRoutine() = for {
-    _ <- showerTime.debug(printThread).fork
-    _ <- boilingWater.debug(printThread).fork
-    _ <- prepareCoffee.debug(printThread)
+    showerFiber <- showerTime.debug(printThread).fork
+    boilingWaterFiber <- boilingWater.debug(printThread).fork
+    zippedFiber <- showerFiber.zip(boilingWaterFiber)
+    result <- zippedFiber.join.debug(printThread)
+    _ <- ZIO.succeed(s"$result done").debug(printThread) *> prepareCoffee.debug(printThread)
+    // *> = then operator or also sequential operator
   } yield()
 
 
