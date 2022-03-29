@@ -53,7 +53,7 @@ object ZioFibers extends zio.App {
   def concurrentRoutine() = for {
     showerFiber <- showerTime.debug(printThread).fork
     boilingWaterFiber <- boilingWater.debug(printThread).fork
-    zippedFiber <- showerFiber.zip(boilingWaterFiber)
+    zippedFiber = showerFiber.zip(boilingWaterFiber)
     result <- zippedFiber.join.debug(printThread)
     _ <- ZIO.succeed(s"$result done").debug(printThread) *> prepareCoffee.debug(printThread)
     // *> = then operator or also sequential operator
