@@ -59,7 +59,11 @@ object ZioFibers extends zio.App {
     // *> = then operator or also sequential operator
   } yield()
 
-
+  /*
+  * Now we are going to talk about interruptions
+  *
+  *
+  * */
 
   override def run(args: List[String]) =
     synchronousRoutine().exitCode
