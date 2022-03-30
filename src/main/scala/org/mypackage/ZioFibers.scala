@@ -2,6 +2,7 @@ package org.mypackage
 
 import zio.ZIO.debug
 import zio.{ExitCode, UIO, URIO, ZIO}
+import zio.duration.*
 
 object ZioFibers extends zio.App {
   // Effect Pattern
@@ -65,9 +66,20 @@ object ZioFibers extends zio.App {
   *
   * */
 
+  val callFromAlice = ZIO.succeed("Call from Alice")
+  val boilingWaterWithTime = boilingWater.debug(printThread) *> ZIO.sleep(5.seconds) *> ZIO.succeed("Boiled Water ready")
+
+  def concurrentRoutineWithAliceCall() = for {
+    _ <- showerTime.debug(printThread)
+    boilingFiber <- boilingWaterWithTime.fork
+    _ <- callFromAlice.debug(printThread).fork *> ZIO.sleep(2.seconds) *> boilingFiber.interrupt.debug(printThread)
+    _ <- ZIO.succeed("No Coffee, going with Alice")
+  } yield ()
+
   override def run(args: List[String]) =
     synchronousRoutine().exitCode
     concurrentShowerWhileBoilingWater().exitCode
     concurrentRoutine().exitCode
+    concurrentRoutineWithAliceCall().exitCode
 
 }
