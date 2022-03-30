@@ -73,7 +73,7 @@ object ZioFibers extends zio.App {
     _ <- showerTime.debug(printThread)
     boilingFiber <- boilingWaterWithTime.fork
     _ <- callFromAlice.debug(printThread).fork *> ZIO.sleep(2.seconds) *> boilingFiber.interrupt.debug(printThread)
-    _ <- ZIO.succeed("No Coffee, going with Alice")
+    _ <- ZIO.succeed("No Coffee, going with Alice").debug(printThread)
   } yield ()
 
   override def run(args: List[String]) =
