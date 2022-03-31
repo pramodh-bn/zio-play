@@ -1,7 +1,7 @@
 package org.mypackage
 
 import zio.ZIO.debug
-import zio.{ExitCode, UIO, URIO, ZIO}
+import zio.{Exit, ExitCode, UIO, URIO, ZIO}
 import zio.duration.*
 
 object ZioFibers extends zio.App {
@@ -76,10 +76,25 @@ object ZioFibers extends zio.App {
     _ <- ZIO.succeed("No Coffee, going with Alice").debug(printThread)
   } yield ()
 
+  val prepareCoffeeWithTime = prepareCoffee.debug(printThread) *> ZIO.sleep(5.seconds) *> ZIO.succeed("Coffee ready")
+
+
+  def concurrentRoutineWithCoffeeAtHome() = for {
+    _ <- showerTime.debug(printThread)
+    _ <- boilingWater.debug(printThread)
+    coffeeFiber <- prepareCoffeeWithTime.debug(printThread).fork.uninterruptible
+    result <- callFromAlice.debug(printThread).fork *> coffeeFiber.interrupt.debug(printThread)
+    _ <- result match {
+      case Exit.Success(value) => ZIO.succeed("Sorry Alice, making breakfast at home").debug(printThread)
+      case _ => ZIO.succeed("Going to cafe with Alice.").debug(printThread)
+    }
+  } yield()
+
   override def run(args: List[String]) =
     synchronousRoutine().exitCode
     concurrentShowerWhileBoilingWater().exitCode
     concurrentRoutine().exitCode
     concurrentRoutineWithAliceCall().exitCode
+    concurrentRoutineWithCoffeeAtHome().exitCode
 
 }
