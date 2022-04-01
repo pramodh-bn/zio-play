@@ -27,4 +27,28 @@ Write functions that describe interactions instead
 * Descriptions of interactions with the outside world
 * Immutable values that can serve as inputs and outputs of pure functions
 * They are executed only at the end of the world
-* 
+
+** ZIO the library 
+* Asynchronous and Concurrent -> Fiber based model
+* Resilient --> Leverages the power of scala's Type system!
+* Efficient --> Apps that never leak resources
+* Easy to understand and test --> Thanks to superior composability!
+
+** ZIO the data type
+ZIO[-R, +E, +A]
+* Core type of the ZIO library
+* Functional effect
+
+A good mental model is the following
+R => Either[E, A]
+This means that a ZIO effect:
+* Needs an environment of type R to run
+* It may fail with an error of type E
+* Or, it may complete successfully, returning a value of type A
+
+Common Aliases:
+Task[+A]          = ZIO[Any, Throwable, +A]
+UIO[+A]           = ZIO[Any, Nothing, +A]
+RIO[-R, +A]       = ZIO[-R, Throwable, +A]
+IO[+E, +A]        = ZIO[Any, E, A]
+URIO[-R, +A]      = ZIO[R, Nothing, A]
