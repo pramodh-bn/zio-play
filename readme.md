@@ -13,7 +13,7 @@ A paradigm, where programs are composition of pure functions
 What is a pure function?
 A pure function must be total, deterministic and depends on inputs only, no side effects
 
-Benefits of Functional Programming
+**Benefits of Functional Programming**
 * Local Reasoning
 * Referential Transparency --> Fearless Refactoring
 * Conciseness --> Fewer bugs
@@ -28,13 +28,13 @@ Write functions that describe interactions instead
 * Immutable values that can serve as inputs and outputs of pure functions
 * They are executed only at the end of the world
 
-** ZIO the library 
+**ZIO the library**
 * Asynchronous and Concurrent -> Fiber based model
 * Resilient --> Leverages the power of scala's Type system!
 * Efficient --> Apps that never leak resources
 * Easy to understand and test --> Thanks to superior composability!
 
-** ZIO the data type
+**ZIO the data type**
 ZIO[-R, +E, +A]
 * Core type of the ZIO library
 * Functional effect
