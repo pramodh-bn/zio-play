@@ -3,7 +3,7 @@ package org.mypackage
 import zio.console.Console
 import zio.random.Random
 import zio.{ExitCode, UIO, URIO, ZEnv}
-import org.mypackage.domain.*
+import org.mypackage.domain._
 
 object TicTacToe extends App {
   def run(args: List[String]): URIO[ZEnv, ExitCode] = ???
