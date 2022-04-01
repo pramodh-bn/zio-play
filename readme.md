@@ -47,8 +47,8 @@ This means that a ZIO effect:
 * Or, it may complete successfully, returning a value of type A
 
 Common Aliases:
-Task[+A]          = ZIO[Any, Throwable, +A]
-UIO[+A]           = ZIO[Any, Nothing, +A]
-RIO[-R, +A]       = ZIO[-R, Throwable, +A]
-IO[+E, +A]        = ZIO[Any, E, A]
-URIO[-R, +A]      = ZIO[R, Nothing, A]
+* Task[+A]          = ZIO[Any, Throwable, +A]
+* UIO[+A]           = ZIO[Any, Nothing, +A]
+* RIO[-R, +A]       = ZIO[-R, Throwable, +A]
+* IO[+E, +A]        = ZIO[Any, E, A]
+* URIO[-R, +A]      = ZIO[R, Nothing, A]
