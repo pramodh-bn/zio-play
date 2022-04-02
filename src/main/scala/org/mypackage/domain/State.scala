@@ -5,8 +5,8 @@ sealed trait State { self =>
       (turn == Piece.X && whoIsCross == Player.Computer) || (turn == Piece.O && whoIsCross == Player.Human)
     case State.Over(_) => false
   }
-
 }
+
 object State {
   final case class Ongoing(board: Board, whoIsCross: Player, turn: Piece) extends State
   final case class Over(board: Board)
