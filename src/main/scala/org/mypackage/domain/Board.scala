@@ -1,5 +1,7 @@
 package org.mypackage.domain
 
+import zio.UIO
+
 import scala.annotation.meta.field
 
 final case class Board(fields: Map[field, Piece]) { self =>
