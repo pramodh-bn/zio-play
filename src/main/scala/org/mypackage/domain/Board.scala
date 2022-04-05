@@ -2,9 +2,7 @@ package org.mypackage.domain
 
 import zio._
 
-import scala.annotation.meta.field
-
-final case class Board(fields: Map[field, Piece]) { self =>
+final case class Board(fields: Map[Field, Piece]) { self =>
   def fieldIsNotFree(field:Field): Boolean = self.fields.contains(field)
   def fieldsOccupiedByPiece(piece: Piece): Set[Field] =
     self.fields.collect {
