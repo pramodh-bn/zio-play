@@ -1,9 +1,9 @@
 package org.mypackage
 
-import zio.console.Console
+import zio.console.{Console, putStrLn}
 import zio.random.Random
 import zio.{ExitCode, UIO, URIO, ZEnv}
-import org.mypackage.domain._
+import org.mypackage.domain.*
 
 object TicTacToe extends App {
   def run(args: List[String]): URIO[ZEnv, ExitCode] = ???
@@ -14,7 +14,18 @@ object TicTacToe extends App {
 
   def programLoop(state: State): URIO[Random with Console, Unit] = ???
 
-  def drawBoard(board: Board): URIO[Console, Unit] = ???
+  def drawBoard(board: Board): URIO[Console, Unit] =
+    putStrLn {
+      Field.All
+        .map(field => board.fields.get(field) -> field.value)
+        .map {
+          case (Some(piece: Piece), _) => piece.toString
+          case (None, value)           => value.toString
+        }
+        .sliding(3, 3)
+        .map(fields => s"""${fields.mkString(" || ")} """)
+        .mkString("\n=======||========||======\n")
+    }
 
   def step(state: State.Ongoing): URIO[Random with Console, State] = ???
 
