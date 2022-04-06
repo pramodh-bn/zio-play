@@ -1,4 +1,5 @@
 package org.mypackage.domain
+
 sealed trait State { self =>
   def isComputerTurn: Boolean = self match {
     case State.Ongoing(_, whoIsCross, turn) =>
@@ -9,5 +10,5 @@ sealed trait State { self =>
 
 object State {
   final case class Ongoing(board: Board, whoIsCross: Player, turn: Piece) extends State
-  final case class Over(board: Board)
+  final case class Over(board: Board) extends State
 }
