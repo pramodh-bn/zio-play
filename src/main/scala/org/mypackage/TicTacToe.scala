@@ -17,6 +17,7 @@ object TicTacToe extends App {
   def drawBoard(board: Board): ZIO[Console, Exception, Unit] =
     putStrLn {
       Field.All
+        // (x) -> y way of creating tuples in Scala
         .map(field => board.fields.get(field) -> field.value)
         .map {
           case (Some(piece: Piece), _) => piece.toString
