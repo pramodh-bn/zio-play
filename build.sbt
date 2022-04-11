@@ -1,8 +1,8 @@
 val version = "0.1.0-SNAPSHOT"
 
-val scalaVer = "3.1.1"
+val scalaVer = "2.13.5"
 
-val zioVersion = "1.0.13"
+val zioVersion = "1.0.5"
 
 lazy val compileDependencies = Seq(
   "dev.zio" %% "zio" % zioVersion

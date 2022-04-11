@@ -1,8 +1,8 @@
 package org.mypackage
 
-import zio.ZIO.debug
+import zio.ZIO._
 import zio.{Exit, ExitCode, UIO, URIO, ZIO}
-import zio.duration.*
+import zio.duration._
 
 object ZioFibers extends zio.App {
   // Effect Pattern
