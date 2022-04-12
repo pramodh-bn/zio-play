@@ -22,7 +22,7 @@ object TicTacToe extends App {
   val choosePlayerPiece: URIO[Console, Piece] =
     for {
       input <- putStr("Do you want to be X or O?: ") *> getStrLn.orDie
-      piece <- ZIO.fromOption(Piece.make(input)) <> (putStrLn("Invalid input") *> choosePlayerPiece)
+      piece 9 <- ZIO.fromOption(Piece.make(input)) <> (putStrLn("Invalid input") *> choosePlayerPiece)
     } yield piece
 
   val whichPieceGoesFirst: URIO[Random, Piece] = nextBoolean.map {
