@@ -5,6 +5,8 @@ import zio._
 import zio.console._
 import zio.random._
 
+import java.io.IOException
+
 object TicTacToe extends App {
 
   def run(args: List[String]): URIO[ZEnv, ExitCode] =
@@ -19,10 +21,10 @@ object TicTacToe extends App {
       _ <- programLoop(initialState)
     } yield ()).exitCode
 
-  val choosePlayerPiece: URIO[Console, Piece] =
+  val choosePlayerPiece: ZIO[Console, IOException, Piece] =
     for {
       input <- putStr("Do you want to be X or O?: ") *> getStrLn.orDie
-      piece 9 <- ZIO.fromOption(Piece.make(input)) <> (putStrLn("Invalid input") *> choosePlayerPiece)
+      piece <- ZIO.fromOption(Piece.make(input)) <> (putStrLn("Invalid input") *> choosePlayerPiece)
     } yield piece
 
   val whichPieceGoesFirst: URIO[Random, Piece] = nextBoolean.map {
@@ -30,13 +32,13 @@ object TicTacToe extends App {
     case false => Piece.O
   }
 
-  def programLoop(state: State): URIO[Random with Console, Unit] =
+  def programLoop(state: State): ZIO[Random with Console, IOException, Unit] =
     state match {
       case state @ State.Ongoing(board, _, _) => drawBoard(board) *> step(state).flatMap(programLoop)
       case State.Over(board)                  => drawBoard(board)
     }
 
-  def drawBoard(board: Board): URIO[Console, Unit] =
+  def drawBoard(board: Board): ZIO[Console, IOException, Unit] =
     putStrLn {
       Field.All
         .map(field => board.fields.get(field) -> field.value)
@@ -49,18 +51,18 @@ object TicTacToe extends App {
         .mkString("\n═══╬═══╬═══\n")
     }
 
-  def step(state: State.Ongoing): URIO[Random with Console, State] =
+  def step(state: State.Ongoing): ZIO[Random with Console, IOException, State] =
     for {
       nextMove  <- if (state.isComputerTurn) getComputerMove(state.board) else getPlayerMove(state.board)
       nextState <- takeField(state, nextMove)
     } yield nextState
 
-  def getComputerMove(board: Board): URIO[Random with Console, Field] =
+  def getComputerMove(board: Board): ZIO[Random with Console, IOException, Field] =
     nextIntBounded(board.unOccupiedFields.size)
       .map(board.unOccupiedFields(_))
       .tap(_ => putStrLn("Waiting for computer's move, press Enter to continue...")) <* getStrLn.orDie
 
-  def getPlayerMove(board: Board): URIO[Console, Field] =
+  def getPlayerMove(board: Board): ZIO[Console, IOException, Field] =
     for {
       input    <- putStr("What's your next move? (1-9): ") *> getStrLn.orDie
       tmpField <- ZIO.fromOption(Field.make(input)) <> (putStrLn("Invalid input") *> getPlayerMove(board))
@@ -68,7 +70,7 @@ object TicTacToe extends App {
       else ZIO.succeed(tmpField)
     } yield field
 
-  def takeField(state: State.Ongoing, field: Field): URIO[Console, State] =
+  def takeField(state: State.Ongoing, field: Field): ZIO[Console, IOException, State] =
     for {
       updatedBoard <- IO.succeed(state.board.updated(field, state.turn))
       updatedTurn  = state.turn.next

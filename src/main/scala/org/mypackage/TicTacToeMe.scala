@@ -27,7 +27,7 @@ object TicTacToeMe extends zio.App {
      * instead of flat map, we can use for comprehension
      *
      */
-    val choosePlayerPiece: URIO[Console, Piece] =
+    val choosePlayerPiece: ZIO[Console, IOException, Piece] =
       for {
       /**_ <- putStr("Do you want to be X or O ?").orDie
       input <- getStrLn.orDie
@@ -50,13 +50,13 @@ object TicTacToeMe extends zio.App {
     case false => Piece.O
   }
 
-  def programLoop(state: State): URIO[Random with Console, Unit] =
+  def programLoop(state: State): ZIO[Random with Console, IOException, Unit] =
     state match {
       case state @ Ongoing(board, _, _) => drawBoard(board) *> step(state).flatMap(nextState => programLoop(nextState))
       case Over(board)                  => drawBoard(board)
     }
 
-  def drawBoard(board: Board): URIO[Console, Unit] =
+  def drawBoard(board: Board): ZIO[Console, IOException, Unit] =
     putStrLn {
       Field.All
         // (x) -> y way of creating tuples in Scala
@@ -70,18 +70,18 @@ object TicTacToeMe extends zio.App {
         .mkString("\n=======||========||======\n")
     }
 
-  def step(state: State.Ongoing): URIO[Random with Console, State] =
+  def step(state: State.Ongoing): ZIO[Random with Console, IOException, State] =
     for {
       nextMove <- if (state.isComputerTurn) getComputerMove(state.board) else getPlayerMove(state.board)
       nextState <- takeField(state, nextMove)
     } yield nextState
 
-  def getComputerMove(board: Board): URIO[Random with Console, Field] =
+  def getComputerMove(board: Board): ZIO[Random with Console, IOException, Field] =
     nextIntBounded(board.unOccupiedFields.size)
       .map(board.unOccupiedFields(_))
       .tap(_ => putStrLn("Waiting for computer's move, please press Enter ...")) <* getStrLn.orDie
 
-  def getPlayerMove(board: Board): URIO[Console, Field] =
+  def getPlayerMove(board: Board): ZIO[Console, IOException, Field] =
     for {
       input <- putStr("What's your next move? [1-9]") *> getStrLn.orDie
       tmpField <- ZIO.fromOption(Field.make(input)) <> (putStrLn("Invalid input") *> getPlayerMove(board))
@@ -89,7 +89,7 @@ object TicTacToeMe extends zio.App {
       else ZIO.succeed(tmpField)
     } yield field
 
-  def takeField(state: State.Ongoing, field: Field): URIO[Console, State] =
+  def takeField(state: State.Ongoing, field: Field): ZIO[Console, IOException, State] =
     for {
       updatedBoard <- ZIO.succeed(state.board.updated(field, state.turn))
       updatedTurn <- ZIO.succeed(state.turn.next)
