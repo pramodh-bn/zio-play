@@ -52,3 +52,7 @@ Common Aliases:
 * RIO[-R, +A]       = ZIO[-R, Throwable, +A]
 * IO[+E, +A]        = ZIO[Any, E, A]
 * URIO[-R, +A]      = ZIO[R, Nothing, A]
+
+structuring code with Zio and Zlayers
+https://www.youtube.com/watch?v=PaogLRrYo64
+
