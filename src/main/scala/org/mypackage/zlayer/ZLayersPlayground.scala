@@ -1,7 +1,14 @@
 package org.mypackage.zlayer
 
-import zio.ZIO
+import zio.{Task, ZIO}
 import zio.console._
+
+case class User(name: String, email: String)
+object userEmailer {
+  trait Service {
+    def notify(user: User, message: String): Task[Unit]
+  }
+}
 
 object ZLayersPlayground extends zio.App {
   // Zio Type, Zio instances are called effects (printing, sockets, reading files)
