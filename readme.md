@@ -61,14 +61,22 @@ ZIO is a library
 ZIO is a zero dependency library for asynchronous and concurrent programming in Scala
 
 # ZIO is Lazy
-```
-val sayHello: ZIO[Any, Nothing, Unit] = 
+```val sayHello: ZIO[Any, Nothing, Unit] = 
     ZIO.effectTotal(println("Hello World!"))
 Runtime.unsafe(sayHello)
-
+```
 - ZIO is aggressively lazy
 - sayHello is just a description of a computation
 - Nothing is printed until we call unsafeRun
+
+# ZIO is composable
 ```
+val zioTweets:ZIO[Any, Throwable, List[String]] = ???
+zioTweets.retry(Schedule.exponential(1.second))
+```
+-- Easy to combine effects to solve problems
+-- Effects are descriptions so we can run them again
+-- Can't do with Future
+
 
 
