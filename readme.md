@@ -78,5 +78,23 @@ zioTweets.retry(Schedule.exponential(1.second))
 -- Effects are descriptions so we can run them again
 -- Can't do with Future
 
+# ZIO preserves information
+```
+sealed trait ConfigError
+final case class IOError(message: String)  extends ConfigError
+final case class ParseError(message: String) extends ConfigError
+
+def readFile(path: String): ZIO[Any, IOError, String] = ???
+def parseConfig(s: String): ZIO[Any, ParseError, String] = ???
+
+def readConfig(path: String): ZIO[Any, ConfigError, Config] = 
+    readFile.flatMap(parseConfig)
+val config: ZIO[Any, Nothing, Config] = 
+    readConfig("config.json").orElseSucceed(defaultConfig)
+```
+-- We can express exactly how our effects can fail
+-- Composed error types automatically inferred
+-- We know whether our effects can fail at all
+
 
 
