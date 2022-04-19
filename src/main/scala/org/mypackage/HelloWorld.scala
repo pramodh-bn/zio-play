@@ -1,9 +1,13 @@
 package org.mypackage
 
+import zio._
+
 object HelloWorld extends App {
+  // type ZIO[R, E, A] = R => [E, A]
+  val sayHello = console.putStrLn("Hello Brooklyn")
 
-  def helloWorld:Unit = println("hello world")
+  val sayHelloTwice = sayHello.repeat(Schedule.recurs(1))
 
-  helloWorld
-
+  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] =
+    sayHelloTwice.as(0).exitCode
 }

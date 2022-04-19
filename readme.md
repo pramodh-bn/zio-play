@@ -60,6 +60,15 @@ https://www.youtube.com/watch?v=6A1SA5Be9qw
 ZIO is a library
 ZIO is a zero dependency library for asynchronous and concurrent programming in Scala
 
-bllah clahhaaa
+# ZIO is Lazy
+```
+val sayHello: ZIO[Any, Nothing, Unit] = 
+    ZIO.effectTotal(println("Hello World!"))
+Runtime.unsafe(sayHello)
+
+- ZIO is aggressively lazy
+- sayHello is just a description of a computation
+- Nothing is printed until we call unsafeRun
+```
 
 
