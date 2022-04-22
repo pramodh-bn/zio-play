@@ -96,5 +96,40 @@ val config: ZIO[Any, Nothing, Config] =
 -- Composed error types automatically inferred
 -- We know whether our effects can fail at all
 
+# ZIO is concurrent
+```scala
+trait ZIO[-R, +E, +A] {
+  def fork: ZIO[R, Nothing, Fiber[E, A]]
+}
+trait Fiber[+E, +A] {
+  def join: ZIO[Any, E, A]
+}
+```
+-- Fiber based concurrency model
+-- Have hundreds of thousands of fibers at a time
+-- Semantically block but never block underlying threads
+
+```scala
+def getUserById(id: Int): ZIO[Any, Throwable, User] = ???
+
+val getUsers: ZIO[Any, Throwable, List[User]] = 
+  ZIO.foreachPar(ids)(getUserById)
+```
+-- Perform effects in parallel and collect the results
+-- Automatically interrupt others if one fails
+-- Control parallelism with foreachParN
+
+```
+val getDataFromEastCoast: ZIO[Any, Throwable, List[Result]] = ???
+val getDataFromWestCoast: ZIO[Any, Throwable, List[Result]] = ???
+
+val result: ZIO[Any, Throwable, List[Result]] = 
+    getDataFromEastCoast.race(getDataFromWestCoast)
+```
+-- Return first effect to succeed
+-- Automatically interrupt the loser
+-- Race many effects with raceAll
+
+
 
 
