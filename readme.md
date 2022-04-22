@@ -130,6 +130,25 @@ val result: ZIO[Any, Throwable, List[Result]] =
 -- Automatically interrupt the loser
 -- Race many effects with raceAll
 
+# ZIO is Resource Safe
+```scala
+trait Fiber[+E, +A] {
+  def interrupt: ZIO[Any, Nothing, Exit[E, A]]
+}
+```
+-- Necessary for safe resource usage
+-- Stop doing work if we don't need result anymore
+-- Can't interrupt a Future without ZIO
+```scala
+trait ZIO[-R, +E, +A] {
+  def ensuring[R1 <: R](finalizer: ZIO[R1, Nothing, A]): ZIO[R1, E, A]
+}
+```
+-- The other necessary condition for safe resource usage
+-- Finalizer will run no matter how effect terminates
+-- Other combinators such as bracket built on top of this
+
+
 
 
 
