@@ -148,6 +148,9 @@ trait ZIO[-R, +E, +A] {
 -- Finalizer will run no matter how effect terminates
 -- Other combinators such as bracket built on top of this
 
+```scala
+val connection: ZManaged[Any, ThT]
+```
 
 
 
