@@ -149,8 +149,31 @@ trait ZIO[-R, +E, +A] {
 -- Other combinators such as bracket built on top of this
 
 ```scala
-val connection: ZManaged[Any, ThT]
+val connection: ZManaged[Any, Throwable, Connection]
+def postgres(connection: Connection): ZManaged[Any, Throwable, UserRepo] = ???
+
+val userRepo: ZManaged[Any, Throwable, UserRepo] = connection.flatMap(postgres)
 ```
+-- Resources guaranteed to be acquired in order
+-- Resources guaranteed to be released in order
+-- Combinators for parallelism and many other scenarios
+
+# ZIO is Testable
+```scala
+trait ZIO[-R, +E, +A] {
+  def provider(r: R): IO[E, A]
+}
+
+object ZIO {
+  def environment[R]: ZIO[R, Nothing, R]
+}
+```
+-- Express the services our application depends on
+-- Add a dependency with ZIO#Environment
+-- Eliminate a dependency with ZIO#provide
+
+
+
 
 
 
