@@ -172,6 +172,18 @@ object ZIO {
 -- Add a dependency with ZIO#Environment
 -- Eliminate a dependency with ZIO#provide
 
+```scala
+val alarm: ZIO[Clock with Console, Throwable, Unit] = for {
+  time <- console.readLine.mapEffect(_.toInt)
+  _    <- clock.sleep(duration.seconds)
+  _    <- console.putStrLn("Wake Up!")
+} yield ()
+```
+-- Environment type automatically inferred
+-- See all the services our application depends con
+-- Propagate dependencies throughout our application
+
+
 
 
 
