@@ -183,6 +183,26 @@ val alarm: ZIO[Clock with Console, Throwable, Unit] = for {
 -- See all the services our application depends con
 -- Propagate dependencies throughout our application
 
+```scala
+for {
+  _ <- TestConsole.feedLine("5")
+  _ <- alarm
+  _ <- TestClock.adjust(5.seconds)
+  output <- TestConsole.output 
+} yield assert(output)(equalTo(Vector("Wake up!\n")))
+```
+-- Provide alternative implementations of services
+-- Using test implementation from ZIO test here
+-- No real time or console interaction needed
+
+# ZIO is Focused on Solving Your Problems
+ZIO includes a variety of concurrency primitives:
+-- Ref - functional equivalent of atomic reference
+-- Promise - single value communication
+-- Queue - multiple value communication
+-- Semaphore - control level concurrency
+-- Schedule - manage repeats and retries
+
 
 
 
