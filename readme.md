@@ -224,6 +224,26 @@ final class TPriorityQueue[K, V] private (private val tref: TRef[SortedMap[K ::[
     }
 }
 ```
+ZIO Stream is pull based streaming solution with deep integration with ZIO
+```scala
+ZStream.effectAsync { cb => 
+  feed.register { tweets => 
+    ZIO.succeed(Chunk.fromIterable(tweets))
+  }
+}
+  .filter(_user = "jdegoes")
+  .map(_.text)
+  .tap(console.putStrLn)
+  .run(writeToFile)
+```
+Ecosystem
+-- Caliban
+-- ZIO Kafka
+-- ZIO Config
+-- ZIO Logging
+-- And Many More
+
+
 
 
 
