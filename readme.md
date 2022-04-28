@@ -203,6 +203,28 @@ ZIO includes a variety of concurrency primitives:
 -- Semaphore - control level concurrency
 -- Schedule - manage repeats and retries
 
+Software Transactional memory for tackling your toughest concurrent problems
+```scala
+final class TPriorityQueue[K, V] private (private val tref: TRef[SortedMap[K ::[V]]]) extends AnyVal {
+  def offer(key: K, value: V): STM[Nothing, Unit] =
+    tref.update { map => 
+      map.get(key) match {
+        case None             => map + (key -> :: (value, Nil))
+        case Some(values)     => map + (key -> :: (value, values))
+      }
+    }
+    
+  def take: STM[Nothing, V] =
+    tref.get.flatMap {
+      map.headOption match {
+        case None                                      => ZSTM.retry
+        case Some((key, value :: (values @ ::(_, _)))) => tref.update(_ + (key -> values)).as(value)
+        case Some((key, value :: _))                   => tref.update(_ - key).as(value)
+      }
+    }
+}
+```
+
 
 
 
