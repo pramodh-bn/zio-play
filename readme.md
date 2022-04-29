@@ -243,6 +243,57 @@ Ecosystem
 -- ZIO Logging
 -- And Many More
 
+# Migrating to ZIO
+# How do we get there?
+This all sounds great, but we have huge legacy code bases.
+-- Start small
+-- Run your effects
+-- Use type aliases
+-- Take advantage of interop packages
+-- Ask for help
+
+# Start Small
+You don't have to migrate your whole application at one.
+-- Pick one part of your codebase
+-- That will be your initial "island" of ZIO
+-- Lift inputs into ZIO
+-- Run outputs to your legacy type
+-- Slowly expand the edges of your "island"
+
+# Run your Effects
+```scala
+val runtime = Runtime.default
+runtime.unsafeRun(zio)
+```
+Don't be afraid to use unsafeRun:
+-- 100% of your application is probably "unsafe" today
+-- Use at boundary between ZIO and legacy code
+-- Create once at the top of your application
+
+# Use Type Aliases
+type Task[+A] = ZIO[Any, Throwable, A]
+
+Taking advantage of all of ZIO's features is a process:
+-- Existing code doesn't have an environment type
+-- Probably has error type fixed to Throwable
+-- So Task is closest to your existing code 
+-- Over time use IO and UIO for typed errors
+-- Then use ZIO for dependency injection
+
+# Take advantage of Interop Packages
+Interop packages available for:
+-- Scala Future
+-- Java Future and friends
+-- Twitter Future
+-- Monix
+-- Cats Effect
+
+# Ask for Help
+We're in this together
+-- Ask on Discord
+-- Ask at events like this
+-- Ask for what you want to see
+
 
 
 
