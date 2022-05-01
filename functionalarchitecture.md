@@ -27,4 +27,30 @@ Lambdas and immutable data are the basis of functions.
 * some types are data
 * Some types are functions
 * Never bundles data & service
-* 
+# FP Challenges
+```
+data notification = Notification String (Maybe RichMessage)
+notifyUser:: User -> UserNotification -> IO()
+```
+Subtyping is the foundation of Modularity
+In Haskell you have functions and data
+
+Architecture is primarily concerned with achieving a large-scale **Code Organization** that minimizes cost of maintenance.
+Haskell has weak tools for code organization
+***Weak Code Organization***
+
+# Leveraging OOP
+What Scala Gives
+Functional aspects
+* Data
+* Purity
+* Composition
+OOP gives
+* Methods
+* Constructors
+* Modules
+
+#Use the right tool for the job
+##Data Modeling
+**Use the right tool for the job**
+
