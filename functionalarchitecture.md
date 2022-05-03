@@ -51,6 +51,67 @@ OOP gives
 * Modules
 
 #Use the right tool for the job
-##Data Modeling
 **Use the right tool for the job**
+* Data Modeling &rarr; Functional Programming (Algebraic Data Types) `case classes` and `sealed traits`
+* Domain Specific Languages &rarr; Functional Programming(Functional Design) 
+* Fine Code Organization &rarr; OO Programming (Methods, Constructors)
+* Course Code Description &rarr; OO Programming (Modules)
+
+#Best Practice Architecture
+##Tips for leveraging scala's hybrid nature
+1. Use methods and Companion objects for organization
+```scala
+final case class Notification(previewMessage: String, longMessage: Option[RichMessage]) {
+  def hasRichMessage: Boolean = longMessage.isDefined // Put functions of data on data classes
+}
+object Notification {
+  def fromRichMessage(msg: RichMessage): Notification = // Put constructors in companion objects
+    Notification(msg.genTextPreview, Some(msg))
+}
+```
+
+2. Adopt the Onion Architecture
+3. Model services with interfaces+ADTs
+4. Implement services with classes in terms of other services
+```scala
+final case class UserNotifyLive(
+  email: Email,    // Implemented wholly in terms of other services
+  sms: SMS,
+  push: Push) extends UserNotify {
+  ...
+}
+```
+```scala
+// Doing with Zio
+val userNotifyLive = ZLayer {
+  for {
+    email <- ZIO.service[Email]
+    sms   <- ZIO.service[SMS]
+    push  <- ZIO.service[Push]
+  } yield UserNotifyLive(email, sms, push)
+}
+```
+5. Isolate service interfaces to separate compilation units
+```
+/userrepo/src/main/scala/
+/usernotify/src/main/scala/
+/userevent/src/main/scala/
+```
+
+6. Isolate implementations to separate compilation units
+```scala
+/userrepo-jdbc/
+  src/
+     main/
+      scala/
+        userrepo/
+          jdbc/
+```
+
+With 5 & 6 the goal is to get to unidirectional graph
+
+
+
+
+
 
