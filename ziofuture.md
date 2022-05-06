@@ -75,6 +75,7 @@ def startConsumers(n: Int, queue: Queue[Work]) = {
   
   ZIO.forkAll(workers)
 }
+#Concurrent
 ```
 ```scala
 // Commit conditional transactions without locks
@@ -90,6 +91,27 @@ def acquireConnection =
       _          <- used.update(connection :: _)
     } yield connection
   }
+```
+
+# Leak-free
+```scala
+// Package up acquire & release into a Managed
+// resource, with no possibility of leaks:
+val managedFile = Managed.make(open(file))(close(_))
+managedFile.use {
+  resource => (for{
+    data <- read(resource)
+    _    <- aggregateData(data)
+  } yield ()).forever
+}
+```
+# Efficient
+```scala
+// Race two effects, cancelling the loser:
+val geoLookup = geoIpService.lookup(ipAddress)
+val dbLookup = userRepo.getProfile(userId).map(_.location.toLatLong)
+
+val fastest = geoLookup.race(dbLookup)
 ```
 
 
