@@ -112,6 +112,9 @@ val geoLookup = geoIpService.lookup(ipAddress)
 val dbLookup = userRepo.getProfile(userId).map(_.location.toLatLong)
 
 val fastest = geoLookup.race(dbLookup)
+
+// Timeout slow effects, interrupting their execution:
+slowDbQuery.timeout(60.seconds)
 ```
 
 
