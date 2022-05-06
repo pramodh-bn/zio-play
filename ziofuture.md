@@ -76,5 +76,21 @@ def startConsumers(n: Int, queue: Queue[Work]) = {
   ZIO.forkAll(workers)
 }
 ```
+```scala
+// Commit conditional transactions without locks
+// or condition variables, free of race conditions
+// and deadlocks.
+def acquireConnection =
+  STM.atomically {
+    for {
+      connection <- available.get.collect {
+                        case head::Nil
+                      }
+      _          <- available.update(_.drop(1))
+      _          <- used.update(connection :: _)
+    } yield connection
+  }
+```
+
 
 
