@@ -116,6 +116,36 @@ val fastest = geoLookup.race(dbLookup)
 // Timeout slow effects, interrupting their execution:
 slowDbQuery.timeout(60.seconds)
 ```
+# Streaming
+```scala
+import zio.stream.{ZSink, ZStream}
+
+import java.nio.file.Files
+// Trivially construct complex transformation pipelines
+// with concurrency, resources and more, which operate 
+// on infinite data in constant memory:
+val path = "<some path>"
+val wordCount = ZStream.fromInputStream(Files.newInputStream(path))
+  .transduce(ZSink.utf8Decode)
+  .transduce(ZSink.splitWords)
+  .run(ZSink.count)
+```
+# Stable
+```scala
+import zio.console.{getStrLn, putStrLn}
+import zio.duration.durationInt
+// Write fast, deterministic unit tests on any program,
+// even interactive, non-deterministic ones:
+val program =
+    for {
+      _    <- putStrLn("What is your name?")
+      name <- getStrLn
+      _    <- putStrLn("I will wait " + name.length + " seconds, " + name)
+      _    <- clock.sleep(name.length.seconds)
+    } yield ()
+    
+val deterministicResults = program.provideLayer(testServices)
+```
 
 
 
