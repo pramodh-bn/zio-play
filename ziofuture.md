@@ -159,6 +159,9 @@ val retryPolicy =
   Schedule.recurs(100)
 
 val result = callFlakyApi(request).retry(retryPolicy)
+
+// Let the compiler tell you what can fail and why:
+val infallible = result.catchAll(_ => fallback)
 ```
 
 
