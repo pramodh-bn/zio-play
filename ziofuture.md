@@ -130,7 +130,7 @@ val wordCount = ZStream.fromInputStream(Files.newInputStream(path))
   .transduce(ZSink.splitWords)
   .run(ZSink.count)
 ```
-# Stable
+# Testable
 ```scala
 import zio.console.{getStrLn, putStrLn}
 import zio.duration.durationInt
@@ -145,6 +145,20 @@ val program =
     } yield ()
     
 val deterministicResults = program.provideLayer(testServices)
+```
+
+# Resilient
+```scala
+import zio.Schedule
+import zio.duration.durationInt
+// Guided by types, build resilient apps:
+val retryPolicy =
+  (Schedule.exponential(10.millis)
+    .whileOutput(_ <- 1.second) andThen
+      Schedule.spaced(60.seconds)) && 
+  Schedule.recurs(100)
+
+val result = callFlakyApi(request).retry(retryPolicy)
 ```
 
 
