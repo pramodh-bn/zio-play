@@ -164,7 +164,14 @@ val result = callFlakyApi(request).retry(retryPolicy)
 val infallible = result.catchAll(_ => fallback)
 ```
 # Compositional
-//blah blah
+All the features compose, you can mix and match like lego blocks.
+Good functional design lets you solve problems in a compositional way.
 
+```scala
+val managedData = Managed.make(open(url))(close(_))
+managedData.use { data => 
+  searchBreadth(data)
+}
+```
 
 
