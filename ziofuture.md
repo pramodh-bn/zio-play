@@ -238,7 +238,27 @@ ZIO.foreachParN(20)(urls) { url =>
   }
 }.timeout(10.minutes)
 
+```
 
+# Layers
+```scala
+final case class UserRepository(database: Database) {
+  def getUserById(id: Id): Task[User] = ...
+}
+object userRepository {
+  val live = UserRepository(_).toLayer
+}
+...
+val myEffect: ZIO[Has[UserRepository]] Throwable User] = 
+  ZIO.serviceWith(_.getUserById(id))
+
+val complexLayer =
+  ( for {
+      ref      <- Ref.make(state)
+      database <- ZIO.service[Database]
+      logging  <- ZIO.service[Logging]
+      config   <- ZIO.service[Config]
+  } yield MyService(ref, database, logging, config)).toLayer
 ```
 
 
