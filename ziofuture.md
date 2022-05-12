@@ -172,6 +172,73 @@ val managedData = Managed.make(open(url))(close(_))
 managedData.use { data => 
   searchBreadth(data)
 }
+// Do it parallel
+ZIO.foreach(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  managedData.use { data =>
+    searchBreadth(data)
+  }
+}
+
+// Do it with only 20 parallel 
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  managedData.use { data =>
+    searchBreadth(data)
+  }
+}
+
+// Some of the URLs are flaky so why don't you add retry?
+val policy = Schedule.recurs(100)
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  val robustData = managedData.retry(policy)
+  managedData.use { data =>
+    searchBreadth(data)
+  }
+}
+
+// Add exponential backoff to retrying
+val policy = Schedule.recurs(100) && Schedule.exponential(10.millis)
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  val robustData = managedData.retry(policy)
+  robustData.use { data =>
+    searchBreadth(data)
+  }
+}
+
+// Add time out to retry
+val policy = Schedule.recurs(100) && Schedule.exponential(10.millis)
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  val robustData = managedData.retry(policy).timeoutFail(30.seconds)
+  robustData.use { data =>
+    searchBreadth(data)
+  }
+}
+
+// Use the faster of 2 search methods
+val policy = Schedule.recurs(100) && Schedule.exponential(10.millis)
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  val robustData = managedData.retry(policy).timeoutFail(30.seconds)
+  robustData.use { data =>
+    searchBreadth(data).race(breadthSearch(data))
+  }
+}
+
+// Time out the whole process
+val policy = Schedule.recurs(100) && Schedule.exponential(10.millis)
+ZIO.foreachParN(20)(urls) { url =>
+  val managedData = Managed.make(open(url))(close(_))
+  val robustData = managedData.retry(policy).timeoutFail(30.seconds)
+  robustData.use { data =>
+    searchBreadth(data).race(breadthSearch(data))
+  }
+}.timeout(10.minutes)
+
+
 ```
 
 
