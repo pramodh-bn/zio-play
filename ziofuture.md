@@ -259,6 +259,17 @@ val complexLayer =
       logging  <- ZIO.service[Logging]
       config   <- ZIO.service[Config]
   } yield MyService(ref, database, logging, config)).toLayer
+
+val managedLayer =
+  ( for {
+    ref      <- Ref.make(state)
+    database <- ZIO.service[Database]
+    logging  <- ZIO.service[Logging]
+    config   <- ZIO.service[Config]
+    service  <- MyService(ref, database, logging, config).toManaged_
+    _        <- service.initialize.toManaged_
+    _        <- ZManaged.finalizer(service.destroy)
+  }) yield Service).toLayer
 ```
 
 
