@@ -270,6 +270,77 @@ val managedLayer =
     _        <- service.initialize.toManaged_
     _        <- ZManaged.finalizer(service.destroy)
   }) yield Service).toLayer
+
+myEffect.inject(
+  Cake.live,
+  Flour.live,
+  Chocolate.live,
+  Spoon.live,
+  Console.live
+)
+
+val layer = ZLayer.wire[Flour with Console](Console.live, Flour.live, Spoon.live)
 ```
+
+# Ergonomics
+```scala
+import zio.ZIO
+ZIO.effectTotal(println("Hello")) => ZIO.succeed(println("Hello"))
+ZIO.effect(readFile()             => ZIO.attempt(readFile())
+ZIO.effectSuspend(makeEffect())   => ZIO.suspend(makeEffect())
+```
+# Profiling
+```scala
+CausalProfiler.profile(200) {
+  myEffect.forever
+}.flatMap(_.writeToFile("profile.coz")).exitCode
+```
+
+# Tracing 
+```scala
+object MyApp extends zio.App {
+  def run(args: List[String]) =
+    myAppLogic.exitCode 
+  
+  val myAppLogic =
+    for {
+      _    <- putStrLn("Hello What is your name?")
+      name <- getStrLn
+      _    <- putStrLn(s"Hello, $name, good to see you here!")
+    } yield ()
+}
+```
+Applying Tracing on the code above
+```scala
+object MyApp extends zio.App {
+  def run(args: List[String]) =
+    myAppLogic.exitCode(newTrace)
+  
+  val myAppLogic =
+    for {
+      _    <- (newTrace) putStrLn("Hello What is your name?") (newTrace)
+      name <- (newTrace) getStrLn (newTrace)
+      _    <- (newTrace) putStrLn(s"Hello, $name, good to see you here!") (newTrace)
+    } yield ()
+}
+```
+
+#Metrics
+Provide built in metrics like 
+* Fiber lifetimes
+* Fiber failures
+* Fiber Counts
+
+#Concurrency
+The Ring Buffer Uses Queue, good for distributing bad for broadcasting.
+Enter Zhub ZIO Hub
+
+
+
+
+
+
+
+
 
 
