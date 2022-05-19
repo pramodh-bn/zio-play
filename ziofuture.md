@@ -335,6 +335,8 @@ Provide built in metrics like
 The Ring Buffer Uses Queue, good for distributing bad for broadcasting.
 Enter Zhub ZIO Hub
 
+ZStream(Producer) ---> ZChannel(Read, Write) ---> ZSink(Consumer)
+
 
 
 
