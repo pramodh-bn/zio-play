@@ -335,7 +335,39 @@ Provide built in metrics like
 The Ring Buffer Uses Queue, good for distributing bad for broadcasting.
 Enter Zhub ZIO Hub
 
-ZStream(Producer) ---> ZChannel(Read, Write) ---> ZSink(Consumer)
+#Streaming
+ZStream(Producer) <--- ZChannel(Read, Write) ---> ZSink(Consumer)
+
+```scala
+ZStream.fromInputStream(Files.newInputStream(path))
+  .transduce(ZSink.utf8Decode)
+  .transduce(ZSink.splitWords)
+  .run(ZSink.count)
+// --> ZChannel(Read, Write)
+```
+
+#Aspects
+```scala
+trait ZIOAspect[-R, +E] {
+  def apply[R1 <: R, E1 >: E, A](zio: ZIO[R1, E1, A]): ZIO[R1, E1, A]
+}
+sealed trait ZIO[-R, +E, +A] {
+  def @@ [R1 <: R, E1 >: E](aspect: ZIOAspect[R1, E1]): ZIO[R1, E1, A] = aspect(this)
+}
+
+object ZIOAspect {
+  def timeoutFail(d: Duration) = ...
+  val bulkhead = ...
+  val trace    = ...
+  def rateLimit(n: Int) = ...
+}
+
+import ZIOAspect._
+myEffect1 @@ timeoutFail(60.seconds) @@ trace @@ rateLimit(200)
+val allAspects = ZIOAspect.allOf(timeoutFail(60.seconds), trace, rateLimit(200))
+
+myEffect2 @@ allAspects
+```
 
 
 
